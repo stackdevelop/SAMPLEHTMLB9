@@ -19,3 +19,23 @@ jobs:
           ls -al
           pwd
           cat index.html
+
+      - name: Copy code to EC2 server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: 22
+          source: ./
+          target: /home/ubuntu
+
+      - name: Executing remote SSH commands
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: 22
+          script: |
+            sudo cp -r ./ /var/www/html
