@@ -1,41 +1,46 @@
-name: B9 - Deployment on EC2
+name : simple_cicd
 
 on:
-  push:
-    branches:
-      - main
+    push:
+        branches:
+            - main
 
 jobs:
-  deployment:
-    runs-on: ubuntu-latest
+    checkout-code:
+        runs-on: ubuntu-Latest
 
-    steps:
-      - name: Checkout code from GitHub repo
-        uses: actions/checkout@v4
+        steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
 
-      - name: Run some commands
-        run: |
-          whoami
-          ls -al
-          pwd
-          cat index.html
+        - name: run
+          run: |
+              ls
+              whoami
 
-      - name: Copy code to EC2 server
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.KEY }}
-          port: 22
-          source: ./
-          target: /home/ubuntu
+        - name: copy file via ssh password
+          uses: appleboy/scp-action@v0.1.7
+          with:
+              host: ${{ secrets.HOST }}
+              username: ${{ secrets.USERNAME }}
+              key: ${{ secrets.KEY }}
+              port: ${{ secrets.PORT }}
+              source: "./"
+              target: /home/ubuntu
+              
+        - name: copy file via ssh password in aws
+          uses: appleboy/ssh-action@v1.2.0
+          with:
+              host: ${{ secrets.HOST }}
+              username: ${{ secrets.USERNAME }}
+              key: ${{ secrets.KEY }}
+              port: ${{ secrets.PORT }}
+              script: |
+                  sudo cp -r . /var/www/html
+              
 
-      - name: Executing remote SSH commands
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.KEY }}
-          port: 22
-          script: |
-            sudo cp -r ./ /var/www/html
+        
+
+        
+               
+
